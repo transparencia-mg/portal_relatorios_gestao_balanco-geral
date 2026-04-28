@@ -2,111 +2,148 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios de Gestão - Governo de Minas Gerais</title>
-    
-    <!-- ==================== ESTILOS E BIBLIOTECAS ==================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Relatórios de Gestão - Portal da Transparência MG</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
     <style>
+        /* ============================================================
+           1. VARIÁVEIS DE CORES — mesmo padrão do dashboard Licitações
+        ============================================================ */
         :root {
-            --primary-dark: #29435A;
-            --primary-darker: #0E2F44;
-            --accent-red: #B93C42;
-            --accent-bright: #DB233F;
-            --background-light: #EEEFF5;
-            --success-green: #28a745;
+            --primary-dark:     #1a3a5c;
+            --primary-darker:   #0f2a44;
+            --accent-red:       #b93c42;
+            --accent-bright:    #db233f;
+            --background-light: #f5f7fa;
+            --success-green:    #28a745;
+            --border-color:     #dee2e6;
+            --header-bg:        #20445d;
         }
-        
+
+        /* ============================================================
+           2. RESET E BASE
+        ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; }
         body {
             font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--background-light);
             padding-bottom: 30px;
+            font-size: 13px;
+        }
+        body, button, input, select, textarea, span, div {
+            font-family: 'Montserrat', sans-serif !important;
+        }
+        .material-icons {
+            font-family: 'Material Icons' !important;
+            font-size: 14px;
+            vertical-align: middle;
         }
 
-        .main-header {
-            background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid var(--accent-red);
+        /* ============================================================
+           3. LAYOUT
+        ============================================================ */
+        .main-container { position: relative; }
+        .dashboard-container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 40px;
+            margin: 0 auto;
         }
-        
-        .logo-container {
+
+        /* ============================================================
+           4. DATA DE ATUALIZAÇÃO
+        ============================================================ */
+        .data-atualizacao-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin: 15px 0 20px 0;
+        }
+        .data-atualizacao-box {
+            background: transparent !important;
+            border-radius: 8px;
+            padding: 8px 15px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            box-shadow: none;
         }
-        
-        .logo {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-bright) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .header-title {
-            font-weight: 700;
-            font-size: 22px;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .header-subtitle {
+        .data-atualizacao-box .material-icons {
             font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
+            color: var(--accent-red);
         }
-        
+
+        /* ============================================================
+           5. ÁREA DE DESCRIÇÃO
+        ============================================================ */
         .description-area {
             background: white;
             border-radius: 10px;
-            padding: 25px 30px;
-            margin: 20px 0 25px 0;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-            border-left: 6px solid var(--accent-red);
+            padding: 22px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
         }
-        
+
+        .description-section {
+            padding: 16px 20px;
+            border-radius: 8px;
+            background: #f8fafd;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
+        .description-section:last-child { margin-bottom: 0; }
+
         .description-title {
-            font-size: 1.4rem;
+            font-size: 13px;
             font-weight: 700;
             color: var(--primary-darker);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
         .description-title .material-icons {
-            font-size: 28px;
+            font-size: 16px;
             color: var(--accent-red);
         }
-        
-        .description-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: #2d3748;
-            margin-bottom: 15px;
+        .description-section.primary .description-title .material-icons {
+            color: var(--primary-dark);
         }
-        
+
+        .description-text {
+            font-size: 12.5px;
+            line-height: 1.75;
+            color: #334155;
+        }
+        .description-text p { margin-bottom: 8px; }
+        .description-text p:last-child { margin-bottom: 0; }
+
+        /* ============================================================
+           6. TABLE CONTAINER — mesmo padrão Licitações
+        ============================================================ */
         .table-container {
             background: white;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
             margin-bottom: 20px;
-            border: 1px solid #dee2e6;
         }
-        
+
         .table-header {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
             color: white;
@@ -117,259 +154,566 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .table-title {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
             margin: 0;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .table-fixed-header-container {
             position: relative;
-            max-height: 500px;
             overflow: auto;
+            width: 100%;
         }
-        
-        .table-fixed-header-container table thead {
+
+        .table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .table thead th {
+            background-color: #54697b !important;
+            color: white !important;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 12px 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: 1px solid #d6dee6;
+            white-space: nowrap;
             position: sticky;
             top: 0;
             z-index: 10;
-            background-color: var(--primary-dark) !important;
         }
-        
-        .table-fixed-header-container table thead th {
-            background-color: var(--primary-dark) !important;
-            color: white !important;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            border: none;
-            padding: 12px 10px;
+        .table thead th:first-child { border-top-left-radius: 0; }
+        .table thead th:last-child  { border-top-right-radius: 0; }
+
+        .table tbody tr { background-color: #ffffff; }
+        .table tbody td {
+            padding: 13px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f1f1;
             font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+        }
+        .table tbody tr:hover { background-color: rgba(41,67,90,0.04); }
+
+        /* Coluna Ano */
+        .ano-badge {
+            display: inline-block;
+            background: #e8edf3;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Links de documentos */
+        .document-link {
+            color: #006a82;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #c5dfe6;
+            background: #f0f8fa;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
-        
-        .table {
-            margin: 0;
-            width: 100%;
+        .document-link:hover {
+            color: white;
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        .document-link .material-icons {
             font-size: 13px;
-            border-collapse: separate;
-            border-spacing: 0;
         }
-        
-        .table tbody tr:hover {
-            background-color: rgba(41, 67, 90, 0.04);
+
+        .nao-disponivel {
+            color: #adb5bd;
+            font-size: 11px;
+            font-style: italic;
         }
-        
-        .table tbody td {
-            padding: 12px 10px;
-            vertical-align: middle;
-            font-size: 13px;
-            border-bottom: 1px solid #f1f1f1;
-        }
-        
-        .document-link {
-            color: var(--primary-darker);
-            text-decoration: none;
+
+        /* ============================================================
+           7. BOTÕES — mesmo padrão Licitações
+        ============================================================ */
+        .btn-export {
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent !important;
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            padding: 0 14px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            border-bottom: 1px dashed var(--accent-red);
+            height: 32px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
-        
-        .document-link:hover {
-            color: var(--accent-red);
-            border-bottom-style: solid;
+        .btn-export:hover {
+            background-color: rgba(255,255,255,0.15) !important;
+            border-color: white !important;
         }
-        
-        .btn-export {
-            background: white;
-            border: 2px solid var(--primary-darker);
-            color: var(--primary-dark);
-            padding: 8px 15px;
+        .btn-export .material-icons { font-size: 14px !important; }
+
+        /* ============================================================
+           TOOLBAR
+        ============================================================ */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .toolbar-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        /* btn-export fora do header — versão escura */
+        .btn-export-dark {
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent !important;
+            border: 1px solid #d6dee6;
+            color: #1a3a5c;
+            padding: 0 14px;
             border-radius: 6px;
-            font-weight: 600;
             font-size: 12px;
-            transition: all 0.3s ease;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            height: 32px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
-        
-        .btn-export:hover {
-            background: var(--primary-dark);
+        .btn-export-dark:hover {
+            background-color: #1a3a5c !important;
+            border-color: #1a3a5c !important;
+            color: #ffffff !important;
+        }
+        .btn-export-dark .material-icons { font-size: 14px !important; }
+
+        .table-badge {
+            background: #1a3a5c;
             color: white;
-        }
-        
-        .data-atualizacao-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .data-atualizacao-box {
-            background: white;
-            border-radius: 8px;
-            padding: 8px 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 12px;
             font-size: 12px;
-            color: var(--primary-dark);
             font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Toast link copiado */
+        .toast-sucesso {
+            position: fixed;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            background: #e6f4ea; color: #1e4620;
+            border-radius: 12px; padding: 14px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none; align-items: center; justify-content: center; gap: 10px;
+            z-index: 9999; min-width: 280px; font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar { flex-direction: column; align-items: flex-start; }
+            .toolbar-left, .toolbar-right { width: 100%; flex-wrap: wrap; }
+        }
+
+        .btn-topo {
+            background: #eeeff5;
+            color: #1a3a5c;
+            border: 1px solid #d6dee6;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 32px;
+        }
+        .btn-topo:hover {
+            background-color: #1a3a5c;
+            color: #ffffff;
+            border-color: #1a3a5c;
+        }
+
+        /* ============================================================
+           8. NOTA DE RODAPÉ
+        ============================================================ */
+        .footer-note {
+            font-size: 11.5px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+        .footer-note .material-icons { font-size: 13px; vertical-align: middle; }
+
+        /* ============================================================
+           9. RESPONSIVIDADE
+        ============================================================ */
+        @media (max-width: 992px) {
+            .dashboard-container { padding: 0 15px !important; }
+        }
+        @media (max-width: 768px) {
+            .dashboard-container { padding: 0 10px !important; }
+            .table thead th, .table tbody td { padding: 10px 10px; font-size: 11px; }
+            .description-area { padding: 15px; }
+            .document-link { font-size: 11px; padding: 4px 8px; }
+            .ano-badge { font-size: 12px; }
+            .table-header { flex-direction: column; align-items: flex-start; }
+        }
+        @media (max-width: 480px) {
+            .data-atualizacao-box { font-size: 11px; }
+            .document-link span.label { display: none; }
+        }
+        @media print {
+            .toolbar, .btn-topo, .footer-note, .data-atualizacao-container { display: none !important; }
+            .table-container { box-shadow: none; border: 1px solid #ccc; }
+            body { background: white; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- ÁREA DE DESCRIÇÃO -->
-        <div class="description-area">
-            <h2 class="description-title"><i class="material-icons">account_balance</i> Balanço Geral do Estado</h2>
-            <div class="description-text">
-                <p>O Balanço Geral do Estado demonstra a consolidação dos atos e fatos da Administração Pública estadual e constitui a instrumentalização da transparência da gestão governamental (accountability).</p>
-                <p>Além da prestação de contas a ser apresentada anualmente pelo Governador, como determina a Constituição Estadual nos termos do inciso XII do artigo 90, o Balanço Geral do Estado possibilita à sociedade mineira acompanhar as realizações do Governo de Minas Gerais, proporcionando a todos os cidadãos uma ampla visão da gestão do patrimônio público, bem como da origem e aplicação dos recursos dispostos nos instrumentos de planejamento.</p>
-            </div>
-            
-            <h2 class="description-title" style="margin-top: 30px;"><i class="material-icons">description</i> Relatório de Gestão e Atividades</h2>
-            <div class="description-text">
-                <p>A Mensagem do Governador ou Relatório de Gestão e Atividades é um instrumento por meio do qual o Poder Executivo presta contas à sociedade, tornando públicas suas ações. Instrumento imprescindível no acompanhamento da transparência da situação financeira estadual.</p>
-            </div>
-        </div>
+<div class="main-container">
+    <div class="dashboard-container">
 
         <!-- DATA DE ATUALIZAÇÃO -->
         <div class="data-atualizacao-container">
             <div class="data-atualizacao-box">
-                <span class="material-icons">update</span>
-                Atualizado em: <span id="data-atualizacao-header">Carregando...</span>
+                <i class="material-icons">event</i>
+                Atualizado em: <span id="data-atualizacao-header" style="margin-left:4px;">Carregando...</span>
+            </div>
+        </div>
+
+        <!-- ÁREA DE DESCRIÇÃO -->
+        <div class="description-area">
+            <div class="description-section primary">
+                <div class="description-title">
+                    <i class="material-icons"></i>
+                    Balanço Geral do Estado
+                </div>
+                <div class="description-text">
+                    <p>O Balanço Geral do Estado demonstra a consolidação dos atos e fatos da Administração Pública estadual e constitui a instrumentalização da transparência da gestão governamental (accountability).</p>
+                    <p>Além da prestação de contas a ser apresentada anualmente pelo Governador, como determina a Constituição Estadual nos termos do inciso XII do artigo 90, o Balanço Geral do Estado possibilita à sociedade mineira acompanhar as realizações do Governo de Minas Gerais, proporcionando a todos os cidadãos uma ampla visão da gestão do patrimônio público, bem como da origem e aplicação dos recursos dispostos nos instrumentos de planejamento.</p>
+                </div>
+            </div>
+            <div class="description-section">
+                <div class="description-title">
+                    <i class="material-icons"></i>
+                    Relatório de Gestão e Atividades
+                </div>
+                <div class="description-text">
+                    <p>A Mensagem do Governador ou Relatório de Gestão e Atividades é um instrumento por meio do qual o Poder Executivo presta contas à sociedade, tornando públicas suas ações. Instrumento imprescindível no acompanhamento da transparência da situação financeira estadual.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <button class="btn-export-dark" onclick="exportarTabela()">
+                    <i class="material-icons">description</i> CSV
+                </button>
+                <button class="btn-export-dark" onclick="exportarPDF()">
+                    <i class="material-icons">print</i> PDF
+                </button>
+                <button class="btn-export-dark" onclick="imprimirTabela()">
+                    <i class="material-icons">local_printshop</i> Imprimir
+                </button>
+                <button class="btn-export-dark" onclick="copiarLink()">
+                    <i class="material-icons">link</i> Copiar Link
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <span class="table-badge" id="totalRegistrosBadge">— registros</span>
             </div>
         </div>
 
         <!-- TABELA DE RELATÓRIOS -->
         <div class="table-container">
-            <div class="table-header">
-                <h3 class="table-title">
-                    <i class="material-icons">inventory</i>
-                    Relatórios Anuais de Gestão
-                </h3>
-                <button class="btn-export" onclick="exportarTabela('tabelaRelatorios')">
-                    <i class="material-icons">download</i>
-                    Exportar CSV
-                </button>
-            </div>
             <div class="table-fixed-header-container">
                 <table class="table" id="tabelaRelatorios">
                     <thead>
                         <tr>
-                            <th>Ano</th>
+                            <th style="width:220px;">Ano</th>
                             <th>Balanço Geral do Estado</th>
-                            <th>Relatório de Gestão / Atividades</th>
+                            <th>Relatório de Gestão e Atividades</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Os dados serão inseridos via JavaScript -->
+                        <!-- Preenchido via JS -->
                     </tbody>
                 </table>
             </div>
         </div>
-        
-        <p class="text-muted small mt-2">
-            <i class="fas fa-info-circle"></i> 
-            Links para os documentos originais da SEFAZ/MG e Google Drive.
-        </p>
+
+        <!-- VOLTAR AO TOPO -->
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+            <button class="btn-topo" onclick="voltarAoTopo()">
+                <i class="material-icons">arrow_upward</i> Voltar ao topo
+            </button>
+        </div>
+
     </div>
+</div>
 
-    <script>
-        // Dados dos relatórios anuais
-        const dadosRelatorios = [
-            { ano: "2025", balanco: "https://www.fazenda.mg.gov.br/governo/contadoria_geral/relatorio_contabil/balanco_2025/", gestao: "https://drive.google.com/drive/folders/1OIvicrF2DlgWV7jqlMOoHn50Pd8mncYO?hl=pt-BR" },
-            { ano: "2024", balanco: "https://www.fazenda.mg.gov.br/governo/contadoria_geral/relatorio_contabil/balanco_2024/index.html", gestao: "https://drive.google.com/drive/folders/1rPFXxjPasvR_PnyUE2_zlb6ZYAR58qh3?hl=pt-BR" },
-            { ano: "2023", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2023/", gestao: "https://drive.google.com/drive/folders/1aZAatjJEhCAORwPqJwLbDckjlRy16W1C?hl=pt-BR" },
-            { ano: "2022", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2022/", gestao: "https://drive.google.com/drive/u/0/folders/1i_CFYxfGEGWbBjRsikt1mUZNYMOiqrEj" },
-            { ano: "2021", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2021/", gestao: "https://drive.google.com/file/d/1Q3Ex0-WNkpzap53_Axe3IYCkmo0LLnQw/view" },
-            { ano: "2020", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2020/", gestao: "https://drive.google.com/drive/folders/1UTADsZp9IRa_F1DSiPiW0PUpKKdG202x" },
-            { ano: "2019", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2019/", gestao: null },
-            { ano: "2018", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2018/", gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-2018" },
-            { ano: "2017", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2017/", gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-2017" },
-            { ano: "2016", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2016/", gestao: null },
-            { ano: "Exercícios anteriores", balanco: null, gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-exercicios-anteriores" }
-        ];
+<!-- Toast link copiado -->
+<div id="toastSucesso" class="toast-sucesso">
+    <i class="material-icons" style="color:#28a745;font-size:18px">check_circle</i>
+    <span>Link copiado para a área de transferência!</span>
+    <span style="cursor:pointer;margin-left:10px;font-size:14px;" onclick="document.getElementById('toastSucesso').style.display='none'">✖</span>
+</div>
 
-        function renderTabela() {
-            const tbody = document.querySelector('#tabelaRelatorios tbody');
-            if (!tbody) return;
-            
-            let html = '';
-            dadosRelatorios.forEach(item => {
-                const balancoLink = item.balanco 
-                    ? `<a href="${item.balanco}" target="_blank" class="document-link"><i class="fas fa-external-link-alt"></i> Balanço</a>` 
-                    : '<span class="text-muted">—</span>';
-                    
-                const gestaoLink = item.gestao 
-                    ? `<a href="${item.gestao}" target="_blank" class="document-link"><i class="fas fa-external-link-alt"></i> Relatório</a>` 
-                    : '<span class="text-muted">—</span>';
-                    
-                html += `<tr>
-                    <td><strong>${item.ano}</strong></td>
-                    <td>${balancoLink}</td>
-                    <td>${gestaoLink}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-        }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-        function exportarTabela(tabelaId) {
-            const tabela = document.getElementById(tabelaId);
-            if (!tabela) return;
-            
-            let csv = [];
-            const cabecalhos = [];
-            tabela.querySelectorAll('thead th').forEach(th => cabecalhos.push(th.innerText));
-            csv.push(cabecalhos.join(';'));
-            
-            tabela.querySelectorAll('tbody tr').forEach(tr => {
-                const linha = [];
-                tr.querySelectorAll('td').forEach(td => {
-                    let texto = td.innerText.trim().replace(/\n/g, ' ');
-                    if (texto.includes(';') || texto.includes('"')) {
-                        texto = `"${texto.replace(/"/g, '""')}"`;
-                    }
-                    linha.push(texto);
-                });
-                csv.push(linha.join(';'));
-            });
-            
-            const conteudo = csv.join('\n');
-            const blob = new Blob(["\uFEFF" + conteudo], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'relatorios-gestao.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+<script>
+    // ============================================================
+    // DADOS DOS RELATÓRIOS
+    // ============================================================
+    const dadosRelatorios = [
+        { ano: "2025", balanco: "https://www.fazenda.mg.gov.br/governo/contadoria_geral/relatorio_contabil/balanco_2025/", gestao: "https://drive.google.com/drive/folders/1OIvicrF2DlgWV7jqlMOoHn50Pd8mncYO?hl=pt-BR" },
+        { ano: "2024", balanco: "https://www.fazenda.mg.gov.br/governo/contadoria_geral/relatorio_contabil/balanco_2024/index.html", gestao: "https://drive.google.com/drive/folders/1rPFXxjPasvR_PnyUE2_zlb6ZYAR58qh3?hl=pt-BR" },
+        { ano: "2023", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2023/", gestao: "https://drive.google.com/drive/folders/1aZAatjJEhCAORwPqJwLbDckjlRy16W1C?hl=pt-BR" },
+        { ano: "2022", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2022/", gestao: "https://drive.google.com/drive/u/0/folders/1i_CFYxfGEGWbBjRsikt1mUZNYMOiqrEj" },
+        { ano: "2021", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2021/", gestao: "https://drive.google.com/file/d/1Q3Ex0-WNkpzap53_Axe3IYCkmo0LLnQw/view" },
+        { ano: "2020", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2020/", gestao: "https://drive.google.com/drive/folders/1UTADsZp9IRa_F1DSiPiW0PUpKKdG202x" },
+        { ano: "2019", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2019/", gestao: null },
+        { ano: "2018", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2018/", gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-2018" },
+        { ano: "2017", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2017/", gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-2017" },
+        { ano: "2016", balanco: "https://www.fazenda.mg.gov.br/tesouro-estadual/contadoria-geral/demonstracoes-contabeis-/balanco-geral-do-estado/balanco-geral-2016/", gestao: null },
+        { ano: "Exercícios anteriores", balanco: null, gestao: "https://www.mg.gov.br/planejamento/documento/mensagem-do-governador-exercicios-anteriores" }
+    ];
 
-        function atualizarData() {
-            const agora = new Date();
-            const dataStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR');
-            const el = document.getElementById('data-atualizacao-header');
-            if (el) el.textContent = dataStr;
-        }
+    // ============================================================
+    // RENDERIZAR TABELA
+    // ============================================================
+    function renderTabela() {
+        const tbody = document.querySelector('#tabelaRelatorios tbody');
+        if (!tbody) return;
 
-        window.addEventListener('load', () => {
-            renderTabela();
-            atualizarData();
-            setInterval(atualizarData, 60000);
+        let html = '';
+        dadosRelatorios.forEach(item => {
+            const isExAnt = item.ano === 'Exercícios anteriores';
+
+            const labelBalanco = isExAnt
+                ? 'Balanços — Exercícios Anteriores'
+                : `Balanço Geral do Estado ${item.ano}`;
+
+            const labelGestao = isExAnt
+                ? 'Relatório de Gestão e Atividades — Exercícios Anteriores'
+                : `Relatório de Gestão e Atividades ${item.ano}`;
+
+            const balancoCell = item.balanco
+                ? `<a href="${item.balanco}" target="_blank" class="document-link">
+                       <i class="material-icons">open_in_new</i>
+                       <span class="label">${labelBalanco}</span>
+                   </a>`
+                : `<span class="nao-disponivel">Não disponível</span>`;
+
+            const gestaoCell = item.gestao
+                ? `<a href="${item.gestao}" target="_blank" class="document-link">
+                       <i class="material-icons">open_in_new</i>
+                       <span class="label">${labelGestao}</span>
+                   </a>`
+                : `<span class="nao-disponivel">Não disponível</span>`;
+
+            html += `
+            <tr>
+                <td><span class="ano-badge">${item.ano}</span></td>
+                <td>${balancoCell}</td>
+                <td>${gestaoCell}</td>
+            </tr>`;
         });
-    </script>
+
+        tbody.innerHTML = html;
+
+        // Atualizar badge de total
+        const badge = document.getElementById('totalRegistrosBadge');
+        if (badge) badge.textContent = `${dadosRelatorios.length} registros`;
+    }
+
+    // ============================================================
+    // EXPORTAR CSV
+    // ============================================================
+    function exportarTabela() {
+        let csvLinhas = ['"Ano";"Balanço Geral do Estado";"Relatório de Gestão e Atividades"'];
+        dadosRelatorios.forEach(item => {
+            const isExAnt = item.ano === 'Exercícios anteriores';
+            const labelB = isExAnt ? 'Balanços — Exercícios Anteriores' : `Balanço Geral do Estado ${item.ano}`;
+            const labelG = isExAnt ? 'Relatório de Gestão e Atividades — Exercícios Anteriores' : `Relatório de Gestão e Atividades ${item.ano}`;
+            const b = item.balanco ? `${labelB} - ${item.balanco}` : '—';
+            const g = item.gestao  ? `${labelG} - ${item.gestao}`  : '—';
+            csvLinhas.push(`"${item.ano}";"${b}";"${g}"`);
+        });
+        const blob = new Blob(["\uFEFF" + csvLinhas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'relatorios-gestao.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // ============================================================
+    // EXPORTAR PDF
+    // ============================================================
+    function exportarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape' });
+        doc.setFontSize(13);
+        doc.setTextColor(32, 68, 93);
+        doc.text('Relatórios de Gestão e Balanço Geral — Minas Gerais', 14, 12);
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Emitido em: ${new Date().toLocaleString('pt-BR')}`, 14, 18);
+        const body = dadosRelatorios.map(item => {
+            const isExAnt = item.ano === 'Exercícios anteriores';
+            const labelB = isExAnt ? 'Balanços — Exercícios Anteriores' : `Balanço Geral do Estado ${item.ano}`;
+            const labelG = isExAnt ? 'Relatório de Gestão e Atividades — Exercícios Anteriores' : `Relatório de Gestão e Atividades ${item.ano}`;
+            return [
+                item.ano,
+                item.balanco ? labelB : '—',
+                item.gestao  ? labelG  : '—'
+            ];
+        });
+        doc.autoTable({
+            head: [['Ano', 'Balanço Geral do Estado', 'Relatório de Gestão e Atividades']],
+            body,
+            startY: 22,
+            headStyles: { fillColor: [32, 68, 93] },
+            styles: { fontSize: 9, cellPadding: 5 },
+            columnStyles: { 0: { cellWidth: 35 } },
+            didDrawPage: () => {
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text('Portal da Transparência — Governo de Minas Gerais', 14, doc.internal.pageSize.height - 5);
+            }
+        });
+        doc.save('relatorios-gestao.pdf');
+    }
+
+    // ============================================================
+    // IMPRIMIR
+    // ============================================================
+    function imprimirTabela() {
+        window.print();
+    }
+
+    // ============================================================
+    // COPIAR LINK
+    // ============================================================
+    function copiarLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const toast = document.getElementById('toastSucesso');
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }).catch(() => {
+            // fallback manual
+            const el = document.createElement('textarea');
+            el.value = url;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const toast = document.getElementById('toastSucesso');
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        });
+    }
+
+    // ============================================================
+    // DATA DE ATUALIZAÇÃO — último commit da pasta dataset/data no GitHub
+    // ============================================================
+    async function atualizarData() {
+        const el = document.getElementById('data-atualizacao-header');
+        if (!el) return;
+        try {
+            const resp = await fetch(
+                'https://api.github.com/repos/transparencia-mg/portal_relatorios_gestao_balanco-geral/commits?path=dataset/data&per_page=1',
+                { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+            );
+            if (!resp.ok) throw new Error('GitHub API erro ' + resp.status);
+            const commits = await resp.json();
+            if (commits && commits.length > 0) {
+                const dataISO = commits[0].commit.committer.date;
+                el.textContent = new Date(dataISO).toLocaleDateString('pt-BR');
+                return;
+            }
+            throw new Error('Nenhum commit encontrado');
+        } catch (e) {
+            // Fallback: data local
+            el.textContent = new Date().toLocaleDateString('pt-BR');
+        }
+    }
+
+    // ============================================================
+    // VOLTAR AO TOPO
+    // ============================================================
+    function voltarAoTopo() {
+        if (window.parent && window.parent !== window) {
+            window.parent.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================================================
+    // IFRAME HEIGHT
+    // ============================================================
+    function iframeUpdateHeight() {
+        const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) + 10;
+        try {
+            if (window.parent && window.parent !== window)
+                window.parent.postMessage({ iframeHeight: h, height: h, type: 'resize' }, '*');
+        } catch(e) {}
+    }
+
+    (function() {
+        function sendHeight() {
+            const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) + 10;
+            try {
+                if (window.parent && window.parent !== window)
+                    window.parent.postMessage({ iframeHeight: h, iframeResize: true, type: 'resize' }, '*');
+            } catch(e) {}
+        }
+        if (window.ResizeObserver) new ResizeObserver(sendHeight).observe(document.body);
+        else { window.addEventListener('resize', sendHeight); setInterval(sendHeight, 2000); }
+        sendHeight();
+    })();
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+    window.addEventListener('load', () => {
+        renderTabela();
+        atualizarData();
+        setTimeout(iframeUpdateHeight, 300);
+    });
+</script>
 </body>
 </html>
